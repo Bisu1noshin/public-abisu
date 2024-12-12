@@ -1,0 +1,7 @@
+abisu/Library/
+abisu/UserSettings/
+*.sln
+abisu/.vs/
+abisu/obj/
+abisu/Logs/
+abisu/Packages/
