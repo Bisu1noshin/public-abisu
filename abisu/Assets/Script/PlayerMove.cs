@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
+    //-------------------------------------
+    //インスペクター参照不可
+    //-------------------------------------
     private GameObject player;
     private Rigidbody2D rb;
     private bool isGround;
-
+    //-------------------------------------
+    //インスペクター参照可
+    //-------------------------------------
     [SerializeField] private State state;
-    private enum State
+    public enum State
     { 
         Non, Idle, Run, Attack, Crouch, Jump, Hit, Dash, Death
     };
@@ -38,6 +43,7 @@ public class PlayerMove : MonoBehaviour
     private bool RunMove(bool isGround)
     {
         int key = 0;
+        float maxspeed = 8.0f;
 
         if(isGround)
         {
@@ -51,12 +57,16 @@ public class PlayerMove : MonoBehaviour
             }
         }
         
-        Vector2 force = new Vector2(30.0f * key, 0);
-        this.rb.AddForce(force);
-        
-        switch(key)
+        Vector2 force = new Vector2(15.0f * key, 0);
+
+        switch (key)
         {
             case 0:
+                if(!Mathf.Approximately(Mathf.Abs(this.rb.velocity.x),0))
+                {
+                    float velocity = this.rb.velocity.x;
+                    this.rb.velocity = new Vector2(velocity * 0.96f, 0);
+                }
                 break;
             case 1:
                 transform.eulerAngles = new Vector3(0, 0, 0);
@@ -67,23 +77,21 @@ public class PlayerMove : MonoBehaviour
             default:break;
         }
 
-        if (key != 0)
+        if (maxspeed > Mathf.Abs(this.rb.velocity.x))
+        {
+            this.rb.AddForce(force);
+        }
+
+        if (!Mathf.Approximately(Mathf.Abs(this.rb.velocity.x), 0))
         {
             return true;
         }
+
         return false;
     }
 
-    private void ChangeAnim(State s_)
+    public State GetState()
     {
-        switch(s_)
-        {
-            case State.Idle:
-
-                break;
-            case State.Run:
-
-                break;
-        }
+        return this.state;
     }
 }
