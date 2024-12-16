@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class PlayerIsGround : MonoBehaviour
 {
+    //-------------------------------------
+    //インスペクター参照不可
+    //-------------------------------------
     private Collider2D Coll;
     private bool exit;
     private bool stay;
     private bool enter;
 
+    //-------------------------------------
+    //インスペクター参照可
+    //-------------------------------------
     [SerializeField] private bool isGround;
 
     private void Start()
@@ -64,6 +70,9 @@ public class PlayerIsGround : MonoBehaviour
             exit = false;
         }
     }
+    //-------------------------------------
+    //参照可能関数
+    //-------------------------------------
     public bool GetIsGround()
     {
         return this.isGround;
