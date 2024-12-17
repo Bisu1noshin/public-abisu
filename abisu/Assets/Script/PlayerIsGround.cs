@@ -33,7 +33,7 @@ public class PlayerIsGround : MonoBehaviour
             Debug.Log("isGround");
         }
 
-        if(stay)
+        if(enter)
         {
             this.isGround = true;
         }

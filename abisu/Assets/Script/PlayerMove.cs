@@ -10,9 +10,10 @@ public class PlayerMove : MonoBehaviour
     private GameObject player;//プレイヤー
     private Rigidbody2D rb;//Rigidbody2D
     private Animator anim;
+    private Collider2D col;
     private bool isGround;//床判定
-    private bool jumpflag;
-    
+    private bool jumpFlag;
+    private bool crouchFlag;
     //-------------------------------------
     //インスペクター参照可
     //-------------------------------------
@@ -27,6 +28,7 @@ public class PlayerMove : MonoBehaviour
         this.rb = GetComponent<Rigidbody2D>();
         this.state = 1;
         this.anim = GetComponent<Animator>();
+        this.col = GetComponent<Collider2D>();
     }
     private void FixedUpdate()
     {
@@ -34,7 +36,7 @@ public class PlayerMove : MonoBehaviour
         isGround = GetComponentInChildren<PlayerIsGround>().GetIsGround();
         
         //床に触れているときジャンプできるようにする
-        if (isGround) { jumpflag = true; }
+        if (isGround) { jumpFlag = true; }
 
         //落ちる
         {
@@ -69,7 +71,7 @@ public class PlayerMove : MonoBehaviour
 
         //ジャンプ
         {
-            if(jumpflag)
+            if(jumpFlag)
             {
                 if (JumpMove())
                 {
@@ -78,6 +80,16 @@ public class PlayerMove : MonoBehaviour
                     ChangeAnim(state);
                 }
             }           
+        }
+
+        //しゃがむ
+        {
+            if(Crouchmove())
+            {
+                Debug.Log("Player->Crouch");
+                state = 3;
+                ChangeAnim(state);
+            }
         }
     }
     private void ChangeAnim(int s_)
@@ -115,7 +127,8 @@ public class PlayerMove : MonoBehaviour
         if (maxspeed > Mathf.Abs(this.rb.velocity.x))
         {
             Vector2 force = new Vector2(15.0f * key, 0);//加える力の大きさ
-                                                        //最大速度より小さければ力を加える
+
+            //最大速度より小さければ力を加える                                            
             this.rb.AddForce(force);
         }
 
@@ -145,8 +158,22 @@ public class PlayerMove : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             this.rb.AddForce(jumpforce);
-            jumpflag = false;
+            jumpFlag = false;
             return true;
+        }
+
+        return false;
+    }
+    private bool Crouchmove()
+    {
+        if(Input.GetKey(KeyCode.DownArrow))
+        {
+            crouchFlag = true;
+            return true;
+        }
+        else
+        {
+            crouchFlag = false;
         }
 
         return false;
