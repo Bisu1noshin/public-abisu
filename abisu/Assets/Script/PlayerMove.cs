@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
@@ -14,13 +15,22 @@ public class PlayerMove : MonoBehaviour
     private bool isGround;//床判定
     private bool jumpFlag;
     private bool crouchFlag;
+    private bool attackFlag;
+    private bool moveFlag;
+    private float timeCnt;
+    private int prestate;
     //-------------------------------------
     //インスペクター参照可
     //-------------------------------------
     [SerializeField] private int state;//ステータス
-
-    
-
+    [SerializeField] private State _state;
+    //-------------------------------------
+    //
+    //-------------------------------------
+    public enum State
+    {
+        Non,Idle,Run,Crouch, Jump, Attack1,Attack2,Attack3
+    }
     private void Start()
     {
         //初期化
@@ -29,6 +39,9 @@ public class PlayerMove : MonoBehaviour
         this.state = 1;
         this.anim = GetComponent<Animator>();
         this.col = GetComponent<Collider2D>();
+        this.attackFlag = false;
+        this.moveFlag = true;
+        this.timeCnt = 0;
     }
     private void FixedUpdate()
     {
@@ -49,24 +62,27 @@ public class PlayerMove : MonoBehaviour
 
         //横移動
         {
-            if (RunMove())
+            if(moveFlag)
             {
-                if (isGround)
+                if (RunMove())
                 {
-                    Debug.Log("Player->Run");
-                    state = -1;
-                    ChangeAnim(state);
-                }   
-            }
-            else
-            {
-                if (isGround)
-                {
-                    Debug.Log("Player->Idle");
-                    state = 1;
-                    ChangeAnim(state);
+                    if (isGround)
+                    {
+                        Debug.Log("Player->Run");
+                        state = -1;
+                        ChangeAnim(state);
+                    }
                 }
-            }
+                else
+                {
+                    if (isGround)
+                    {
+                        Debug.Log("Player->Idle");
+                        state = 1;
+                        ChangeAnim(state);
+                    }
+                }
+            }          
         }
 
         //ジャンプ
@@ -89,6 +105,14 @@ public class PlayerMove : MonoBehaviour
                 Debug.Log("Player->Crouch");
                 state = 3;
                 ChangeAnim(state);
+            }
+        }
+
+        //攻撃
+        {
+            if(AttackMove())
+            {
+                Debug.Log("player->Attack");
             }
         }
     }
@@ -169,15 +193,74 @@ public class PlayerMove : MonoBehaviour
         if(Input.GetKey(KeyCode.DownArrow))
         {
             crouchFlag = true;
+            moveFlag = false;
             return true;
         }
         else
         {
             crouchFlag = false;
+            moveFlag = true;
         }
 
         return false;
     }
+    private bool AttackMove()
+    {
+        if(isGround)
+        {
+            if (attackFlag)
+            {
+                timeCnt += Time.deltaTime * 1.0f;
+
+                if (timeCnt > 0.2f)
+                {
+                    //通常攻撃
+                    prestate = state;
+                    state = 0;
+                    timeCnt = 0;
+                    _state = State.Attack2;
+                    ChangeAnim(state);
+                    attackFlag = false;
+                    return true;
+                }
+                else
+                {
+                    if (Input.GetKeyDown(KeyCode.A))
+                    {
+                        //コンボ派生へつながる
+                        prestate = state;
+                        state = 0;
+                        _state = State.Attack3;
+                        ChangeAnim(state);
+                        timeCnt = 0;
+                        attackFlag = false;
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            attackFlag = true;
+            moveFlag = false;
+        }
+
+        return false;
+    }
+
+    private void PlayerAttackEnd()
+    {
+        moveFlag = true;
+        _state = State.Idle;
+        state = 1;
+    }
+    //private void Attack2End()
+    //{
+    //    state = 1;
+    //    attackFlag = false;
+    //}
+
     //-------------------------------------
     //参照可能関数
     //-------------------------------------
@@ -185,5 +268,9 @@ public class PlayerMove : MonoBehaviour
     {
         //参照用
         return this.state;
+    }
+    public State Get_State()
+    {
+        return this._state;
     }
 }

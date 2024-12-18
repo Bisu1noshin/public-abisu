@@ -59,9 +59,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\PlayerIsGround.cs" />
-    <Compile Include="Assets\Script\PlayerAnim.cs" />
+    <Compile Include="Assets\Script\PlayerAnimation.cs" />
     <Compile Include="Assets\Script\GameDirector.cs" />
     <Compile Include="Assets\Script\PlayerMove.cs" />
+    <Compile Include="Assets\Script\PlayerHitBox.cs" />
+    <Compile Include="Assets\Script\PlayerHitCheck.cs" />
     <Compile Include="Assets\Script\CameraMove.cs" />
   </ItemGroup>
   <ItemGroup>
