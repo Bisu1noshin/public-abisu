@@ -10,7 +10,7 @@ public class PlayerHitBox : MonoBehaviour
     private Collider2D idlecoll;
     private Collider2D crouchcoll;
     private bool playerHit;
-    private int state;
+    private PlayerInput.State state;
 
     private void Start()
     {
@@ -27,17 +27,10 @@ public class PlayerHitBox : MonoBehaviour
 
     private void Update()
     {
-        state = player.GetComponent<PlayerMove>().GetState();
+        state = player.GetComponent<PlayerInput>().GetState();
 
-        if(state == 3)
-        {
-            idlecoll.enabled = false;
-            crouchcoll.enabled = true;
-        }
-        else
-        {
-            idlecoll.enabled = true;
-            crouchcoll.enabled = false;
-        }
+        if (state != PlayerInput.State.Non) { return; }
+
+        
     }
 }

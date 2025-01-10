@@ -28,7 +28,7 @@ public class PlayerAnimation : MonoBehaviour
             }
             if (state == PlayerMove.State.Attack3)
             {
-                anim.Play("PlayerAttack3", 0, 0);
+
             }
         }
         
