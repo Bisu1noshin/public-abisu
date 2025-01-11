@@ -42,14 +42,16 @@ public class PlayerIsGround : MonoBehaviour
         {
             this.isGround = false;
         }
+
+        enter = false;
+        stay = false;
+        exit = false;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.tag == "Ground")
         {
-            enter = true;
-            stay = false;
-            exit = false;
+            enter = true;           
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -57,8 +59,6 @@ public class PlayerIsGround : MonoBehaviour
         if(collision.tag == "Ground")
         {
             exit = true;
-            enter = false;
-            stay = false;
         }
     }
     private void OnTriggerStay2D(Collider2D collision)
@@ -66,8 +66,6 @@ public class PlayerIsGround : MonoBehaviour
         if(collision.tag == "Ground")
         {
             stay = true;
-            enter = false;
-            exit = false;
         }
     }
     //-------------------------------------
