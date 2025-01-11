@@ -1,24 +1,24 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
 //--------------------------------------
-//ƒXƒe[ƒ^ƒX‚ÌŠÇ——p
-//ƒRƒ“ƒ|[ƒlƒ“ƒg‚Æ‚µ‚Äˆµ‚¤
-//ƒRƒ“ƒgƒ[ƒ‰[‚Ìî•ñ‚ğó‚¯æ‚é
-//‚±‚ÌƒXƒNƒŠƒvƒg‚Íenabled‚µ‚È‚¢
+//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ç®¡ç†ç”¨
+//ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¨ã—ã¦æ‰±ã†
+//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®æƒ…å ±ã‚’å—ã‘å–ã‚‹
+//ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã¯enabledã—ãªã„
 //--------------------------------------
 public class PlayerContllor : MonoBehaviour
 {
     //----------------------------------
-    //ƒCƒ“ƒXƒyƒNƒ^[QÆ‰Â”\
+    //ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼å‚ç…§å¯èƒ½
     //----------------------------------
 
     [SerializeField] private State state;
     [SerializeField] private bool jumpFlag;
 
     //----------------------------------
-    //ƒCƒ“ƒXƒyƒNƒ^[QÆ•s‰Â
+    //ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼å‚ç…§ä¸å¯
     //----------------------------------
 
     private Rigidbody2D rb;
@@ -40,7 +40,7 @@ public class PlayerContllor : MonoBehaviour
     private float timeCnt;
 
     //----------------------------------
-    //ƒXƒe[ƒ^ƒX‚Ì’è‹`
+    //ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®å®šç¾©
     //----------------------------------
 
     public enum State
@@ -78,24 +78,24 @@ public class PlayerContllor : MonoBehaviour
 
     private void Update()
     {
-        //ƒXƒe[ƒ^ƒX‚ªNon‚Ì‚Í–³‹‚·‚é
+        //ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãŒNonã®æ™‚ã¯ç„¡è¦–ã™ã‚‹
         if(state == State.Non)
         {
-            Debug.Log("ƒvƒŒƒCƒ„‚ª¶¬‚³‚ê‚Ä‚Ü‚¹‚ñ");
+            Debug.Log("ãƒ—ãƒ¬ã‚¤ãƒ¤ãŒç”Ÿæˆã•ã‚Œã¦ã¾ã›ã‚“");
             return;
         }
 
-        //ƒXƒe[ƒ^ƒX‚ªDeath‚Ì‚Í–³‹‚·‚é
+        //ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãŒDeathã®æ™‚ã¯ç„¡è¦–ã™ã‚‹
         if (state == State.Death)
         {
-            Debug.Log("ƒvƒŒƒCƒ„‚ª€‚É‚Ü‚µ‚½");
+            Debug.Log("ãƒ—ãƒ¬ã‚¤ãƒ¤ãŒæ­»ã«ã¾ã—ãŸ");
             return;
         }
 
-        //°”»’è‚ğQÆ‚·‚é
+        //åºŠåˆ¤å®šã‚’å‚ç…§ã™ã‚‹
         isGround = GetComponentInChildren<PlayerIsGround>().GetIsGround();
 
-        //ƒAƒiƒƒOƒXƒeƒBƒbƒN‚ğQÆ‚·‚é
+        //ã‚¢ãƒŠãƒ­ã‚°ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã‚’å‚ç…§ã™ã‚‹
         Horizontal = Input.GetAxis("Horizontal");
         Vertical = Input.GetAxis("Vertical");      
     }
@@ -110,7 +110,7 @@ public class PlayerContllor : MonoBehaviour
 
     private void PlayerMove() {
 
-        //‰¡ˆÚ“®
+        //æ¨ªç§»å‹•
         {
             if (Horizontal != 0)
             {
@@ -130,7 +130,7 @@ public class PlayerContllor : MonoBehaviour
             }
         }
 
-        //Œü‚«‚ğ•Ï‚¦‚é
+        //å‘ãã‚’å¤‰ãˆã‚‹
         {
             if (Horizontal > 0)
             {
@@ -144,7 +144,7 @@ public class PlayerContllor : MonoBehaviour
             {
                 if (isGround)
                 {
-                    //‰Á‚í‚Á‚½—Í‚ª0‚æ‚è‘½‚¢A–€C‚ğ‹N‚±‚·
+                    //åŠ ã‚ã£ãŸåŠ›ãŒ0ã‚ˆã‚Šå¤šã„æ™‚ã€æ‘©æ“¦ã‚’èµ·ã“ã™
                     if (!Mathf.Approximately(Mathf.Abs(this.rb.velocity.x), 0))
                     {
                         float velocityX = this.rb.velocity.x;
@@ -162,17 +162,17 @@ public class PlayerContllor : MonoBehaviour
 
             switch (key)
             {
-                case 1://‰E‚ÉŒü‚­
+                case 1://å³ã«å‘ã
                     transform.eulerAngles = new(0, 0, 0);
                     break;
-                case -1://¶‚ÉŒü‚­
+                case -1://å·¦ã«å‘ã
                     transform.eulerAngles = new(0, 180, 0);
                     break;
                 default: break;
             }
         }
 
-        //‚µ‚á‚ª‚Ş
+        //ã—ã‚ƒãŒã‚€
         {
             if (isGround)
             {
@@ -192,20 +192,20 @@ public class PlayerContllor : MonoBehaviour
     }
     private void PlayerJump() {
 
-        //‚µ‚á‚ª‚ñ‚Å‚¢‚éê‡‚Íˆ—‚ğs‚í‚È‚¢
+        //ã—ã‚ƒãŒã‚“ã§ã„ã‚‹å ´åˆã¯å‡¦ç†ã‚’è¡Œã‚ãªã„
         if (crouchFlag) { return; }
 
-        //’n–Ê‚ÉÚG‚µ‚Ä‚¢‚éƒWƒƒƒ“ƒv‚Å‚«‚é‚æ‚¤‚É‚·‚é
+        //åœ°é¢ã«æ¥è§¦ã—ã¦ã„ã‚‹æ™‚ã‚¸ãƒ£ãƒ³ãƒ—ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
         if (isGround) { jumpFlag = true; }
 
-        //—‰º‚Ìˆ—
-        if (!isGround && rb.velocity.y < 0)//—‰º‚µ‚Ä‚¢‚é‚Æ‚«
+        //è½ä¸‹ã®å‡¦ç†
+        if (!isGround && rb.velocity.y < 0)//è½ä¸‹ã—ã¦ã„ã‚‹ã¨ã
         {
             anim.SetInteger("Anim_Trigger", 0);
-            return;//ƒWƒƒƒ“ƒv‚Íˆê“x‚¾‚¯
+            return;//ã‚¸ãƒ£ãƒ³ãƒ—ã¯ä¸€åº¦ã ã‘
         }
 
-        //ƒWƒƒƒ“ƒv‚Ìˆ—
+        //ã‚¸ãƒ£ãƒ³ãƒ—ã®å‡¦ç†
         if (jumpFlag)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -219,7 +219,7 @@ public class PlayerContllor : MonoBehaviour
     }
     private void PlayerAttack(){
 
-        //’nãUŒ‚
+        //åœ°ä¸Šæ”»æ’ƒ
         {
             if (isGround)
             {
@@ -270,7 +270,7 @@ public class PlayerContllor : MonoBehaviour
             }
         }
 
-        //‹ó’†UŒ‚
+        //ç©ºä¸­æ”»æ’ƒ
         {
             if (!isGround)
             {
@@ -286,7 +286,7 @@ public class PlayerContllor : MonoBehaviour
             }
         }
 
-        //‚µ‚á‚ª‚İUŒ‚
+        //ã—ã‚ƒãŒã¿æ”»æ’ƒ
         {
             if (crouchFlag)
             {
@@ -338,24 +338,24 @@ public class PlayerContllor : MonoBehaviour
     }
 
     //---------------------------------------
-    //ƒQƒbƒ^[ŠÖ”
+    //ã‚²ãƒƒã‚¿ãƒ¼é–¢æ•°
     //---------------------------------------
     public bool GetIsGround() { return this.isGround; }
     public float GetHorizontal(){ return this.Horizontal; }
     public float GetVertical() { return this.Vertical; }
     public State GetState(){ return this.state; }
     //---------------------------------------
-    //ƒZƒbƒ^[ŠÖ”(•ÛçŠÇ—!!!!!!)
+    //ã‚»ãƒƒã‚¿ãƒ¼é–¢æ•°(ä¿å®ˆç®¡ç†!!!!!!)
     //---------------------------------------
     public void SetState(State s_)
     {
-        //ˆø”‚ªNon‚È‚ç–³‹‚·‚é
+        //å¼•æ•°ãŒNonãªã‚‰ç„¡è¦–ã™ã‚‹
         if (s_ == State.Non) { return; }
 
-        //ƒXƒe[ƒ^ƒX‚ªDeath‚È‚ç–³‹‚·‚é
+        //ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãŒDeathãªã‚‰ç„¡è¦–ã™ã‚‹
         if (state == State.Death) { return; }
 
-        //‰ñ”ğ’†‚Í”í’e‚µ‚È‚¢‚½‚ßNormalˆÈŠO‚Í–³‹‚·‚é
+        //å›é¿ä¸­ã¯è¢«å¼¾ã—ãªã„ãŸã‚Normalä»¥å¤–ã¯ç„¡è¦–ã™ã‚‹
         if (state == State.Dash)
         {
             if (s_ != State.Normal)
@@ -364,7 +364,7 @@ public class PlayerContllor : MonoBehaviour
             }
         }
 
-        //ƒXƒe[ƒ^ƒX‚Éˆø”‚ğ‘ã“ü‚·‚é
+        //ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã«å¼•æ•°ã‚’ä»£å…¥ã™ã‚‹
         this.state = s_;
     }
 }

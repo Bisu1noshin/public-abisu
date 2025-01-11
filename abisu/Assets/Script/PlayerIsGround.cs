@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerIsGround : MonoBehaviour
 {
     //-------------------------------------
-    //ƒCƒ“ƒXƒyƒNƒ^[QÆ•s‰Â
+    //ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼å‚ç…§ä¸å¯
     //-------------------------------------
     private Collider2D Coll;
     private bool exit;
@@ -13,7 +13,7 @@ public class PlayerIsGround : MonoBehaviour
     private bool enter;
 
     //-------------------------------------
-    //ƒCƒ“ƒXƒyƒNƒ^[QÆ‰Â
+    //ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼å‚ç…§å¯
     //-------------------------------------
     [SerializeField] private bool isGround;
 
@@ -69,7 +69,7 @@ public class PlayerIsGround : MonoBehaviour
         }
     }
     //-------------------------------------
-    //QÆ‰Â”\ŠÖ”
+    //å‚ç…§å¯èƒ½é–¢æ•°
     //-------------------------------------
     public bool GetIsGround()
     {
