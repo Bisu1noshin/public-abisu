@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+//using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.InputSystem;
 //--------------------------------------
 //ステータスの管理用
 //コンポーネントとして扱う
@@ -25,7 +26,8 @@ public class PlayerContllor : MonoBehaviour
     private Animator anim;
     private Collider2D idlecoll;
     private Collider2D crouchcoll;
-    private float jumpforce = 400.0f;
+    private PlayerAction inputActions;
+    private float jumpforce = 600.0f;
     private bool isGround;
     private bool crouchFlag;
     private float Horizontal;
@@ -36,8 +38,13 @@ public class PlayerContllor : MonoBehaviour
     private bool attackFlag;
     private bool jumpAttackFlag;
     private bool attackTime;
-    private bool comboAttackFlag;
+    private int comboAttack;
     private float timeCnt;
+
+    private Vector2 moveInputValue;
+    private bool onjumpFlag;
+    private bool onattackFlag;
+    private bool onmagicFlag;
 
     //----------------------------------
     //ステータスの定義
@@ -70,10 +77,48 @@ public class PlayerContllor : MonoBehaviour
         speed = 15.0f;
         maxspeed = 8.0f;
         key = 0;
-        attackFlag = false;
+        attackFlag = true;
         attackTime = true;
-        comboAttackFlag = false;
+        comboAttack = 0;
         timeCnt = 0;
+        onjumpFlag = false;
+        onattackFlag = false;
+        onmagicFlag = false;
+    }
+
+    private void Awake()
+    {
+        // Actionスクリプトのインスタンス生成
+        inputActions = new PlayerAction();
+
+        // Actionイベント登録
+        inputActions.Player.Move.started += OnMove;
+        inputActions.Player.Move.performed += OnMove;
+        inputActions.Player.Move.canceled += OnMove;
+        inputActions.Player.Jump.performed += OnJump;
+        inputActions.Player.Attack.performed +=OnAttack;
+
+        // Input Actionを機能させるためには、
+        // 有効化する必要がある
+        inputActions.Enable();
+    }
+    private void OnDestroy()
+    {
+        // 自身でインスタンス化したActionクラスはIDisposableを実装しているので、
+        // 必ずDisposeする必要がある
+        inputActions.Dispose();
+    }
+    private void OnMove(InputAction.CallbackContext context)
+    {
+        moveInputValue = context.ReadValue<Vector2>();
+    }
+    private void OnJump(InputAction.CallbackContext context)
+    {
+        onjumpFlag = true;
+    }
+    private void OnAttack(InputAction.CallbackContext context)
+    {
+        onattackFlag = true;
     }
 
     private void Update()
@@ -96,8 +141,8 @@ public class PlayerContllor : MonoBehaviour
         isGround = GetComponentInChildren<PlayerIsGround>().GetIsGround();
 
         //アナログスティックを参照する
-        Horizontal = Input.GetAxis("Horizontal");
-        Vertical = Input.GetAxis("Vertical");      
+        Horizontal = moveInputValue.x;
+        Vertical = moveInputValue.y;
     }
 
     private void FixedUpdate()
@@ -105,6 +150,7 @@ public class PlayerContllor : MonoBehaviour
         PlayerMove();
         PlayerJump();
         PlayerAttack();
+        PlayerMagic();
         CollisionContllor();
     }
 
@@ -116,7 +162,7 @@ public class PlayerContllor : MonoBehaviour
             {
                 if (Mathf.Abs(rb.velocity.x) <= maxspeed)
                 {
-                    Vector2 force = new(speed * Horizontal, rb.velocity.y);
+                    Vector2 force = new(speed * Horizontal, 0);
                     rb.AddForce(force);
                     anim.SetInteger("Anim_Trigger", -1);
                 }
@@ -176,7 +222,7 @@ public class PlayerContllor : MonoBehaviour
         {
             if (isGround)
             {
-                if (Vertical >= 0)
+                if (Vertical >= -0.5f)
                 {
                     anim.SetBool("Crouch", false);
                     crouchFlag = false;
@@ -193,7 +239,7 @@ public class PlayerContllor : MonoBehaviour
     private void PlayerJump() {
 
         //しゃがんでいる場合は処理を行わない
-        if (crouchFlag) { return; }
+        if (crouchFlag) { onjumpFlag = false; return; }
 
         //地面に接触している時ジャンプできるようにする
         if (isGround) { jumpFlag = true; }
@@ -208,99 +254,120 @@ public class PlayerContllor : MonoBehaviour
         //ジャンプの処理
         if (jumpFlag)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (onjumpFlag)
             {
                 Vector2 jumpForce = new(this.rb.velocity.x, jumpforce);
                 this.rb.AddForce(jumpForce);
                 anim.Play("PlayerJumpFoward", 0, 0);
                 jumpFlag = false;
+                onjumpFlag = false;
             }
         }
     }
     private void PlayerAttack(){
 
-        //地上攻撃
+        ////地上攻撃
+        //{
+        //    if (isGround)
+        //    {
+        //        if (!jumpAttackFlag)
+        //        {
+        //            jumpAttackFlag = true;
+        //        }
+
+        //        if (attackFlag)
+        //        {
+        //            timeCnt += Time.deltaTime * 1.0f;
+
+        //            if (timeCnt > 0.2f)
+        //            {
+        //                anim.Play("PlayerAttack3", 0, 0);
+        //                timeCnt = 0;
+        //                attackFlag = false;
+        //                comboAttackFlag = true;
+        //                return;
+        //            }
+        //            else
+        //            {
+        //                if (onattackFlag)
+        //                {
+        //                    anim.Play("PlayerAttack2", 0, 0);
+        //                    Debug.Log("combo");
+        //                    attackFlag = false;
+        //                    onattackFlag = false;
+        //                    return;
+        //                }
+        //            }
+        //        }
+
+        //        if (comboAttackFlag)
+        //        {
+        //            if (TimeCnt(0.5f))
+        //            {
+        //                comboAttackFlag = false;
+        //                return;
+        //            }
+
+        //            if (onattackFlag)
+        //            {
+        //                anim.Play("PlayerAttack1", 0, 0);
+        //                comboAttackFlag = false;
+        //                onattackFlag = false;
+        //                return;
+        //            }
+        //        }
+        //    }
+        //}
+
+        ////空中攻撃
+        //{
+        //    if (!isGround)
+        //    {
+        //        if (attackFlag && jumpAttackFlag)
+        //        {
+        //            rb.gravityScale = 0;
+        //            rb.velocity = new(0, 0);
+        //            anim.Play("PlayerJumpAttack", 0, 0);
+        //            attackFlag = false;
+        //            jumpAttackFlag = false;
+        //        }
+
+        //    }
+        //}
+
+        ////しゃがみ攻撃
+        //{
+        //    if (crouchFlag)
+        //    {
+        //        if (attackFlag)
+        //        {
+        //            anim.Play("PlayerCrouchAttack", 0, 0);
+        //            attackFlag = false;
+        //        }
+        //    }
+        //}
+
+        if (onattackFlag && attackFlag)
         {
-            if (isGround)
+            switch (comboAttack)
             {
-                if (!jumpAttackFlag)
-                {
-                    jumpAttackFlag = true;
-                }
-
-                if (attackFlag)
-                {
-                    timeCnt += Time.deltaTime * 1.0f;
-
-                    if (timeCnt > 0.2f)
-                    {
-                        anim.Play("PlayerAttack3", 0, 0);
-                        timeCnt = 0;
-                        attackFlag = false;
-                        comboAttackFlag = true;
-                        return;
-                    }
-                    else
-                    {
-                        if (Input.GetKeyDown(KeyCode.B))
-                        {
-                            anim.Play("PlayerAttack2", 0, 0);
-                            Debug.Log("combo");
-                            attackFlag = false;
-                            return;
-                        }
-                    }
-                }
-
-                if (comboAttackFlag)
-                {
-                    if (TimeCnt(0.5f))
-                    {
-                        comboAttackFlag = false;
-                        return;
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.B))
-                    {
-                        anim.Play("PlayerAttack1", 0, 0);
-                        comboAttackFlag = false;
-                        return;
-                    }
-                }
-            }
-        }
-
-        //空中攻撃
-        {
-            if (!isGround)
-            {
-                if (attackFlag && jumpAttackFlag)
-                {
-                    rb.gravityScale = 0;
-                    rb.velocity = new(0, 0);
-                    anim.Play("PlayerJumpAttack", 0, 0);
+                case 0:
+                    anim.Play("PlayerAttack2", 0, 0);
+                    comboAttack = 1;
                     attackFlag = false;
-                    jumpAttackFlag = false;
-                }
-
-            }
-        }
-
-        //しゃがみ攻撃
-        {
-            if (crouchFlag)
-            {
-                if (attackFlag)
-                {
-                    anim.Play("PlayerCrouchAttack", 0, 0);
+                    break;
+                case 1:
+                    anim.Play("PlayerAttack3", 0, 0);
+                    comboAttack = 2;
                     attackFlag = false;
-                }
+                    break;
+                case 2:
+                    anim.Play("PlayerAttack1", 0, 0);
+                    comboAttack = 0;
+                    attackFlag = false;
+                    break;
             }
-        }
-
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            attackFlag = true;
+            onattackFlag = false;
         }
     }
     private void PlayerMagic()
@@ -320,9 +387,33 @@ public class PlayerContllor : MonoBehaviour
             crouchcoll.enabled = false;
         }
     }
+    private void PlayerAttack1End()
+    {
+        comboAttack = 0;
+    }
+    private void PlayerAttack2End()
+    {
+        comboAttack = 0;
+    }
+    private void PlayerAttack3End()
+    {
+        comboAttack = 0;
+    }
+    private void PlayerAttack1true()
+    {
+        attackFlag = true;
+    }
+    private void PlayerAttack2true()
+    {
+        attackFlag = true;
+    }
+    private void PlayerAttack3true()
+    {
+        attackFlag = true;
+    }
     private void PlayerJumpAttackEnd()
     {
-        rb.gravityScale = 1;
+        rb.gravityScale = 2;
     }
     private bool TimeCnt(float max)
     {
