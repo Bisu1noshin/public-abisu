@@ -212,7 +212,7 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""f883f1cc-8515-4c07-bcff-af33a4fc4e92"",
                     ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold(duration=1.5)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Magic"",
