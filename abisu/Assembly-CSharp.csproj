@@ -59,11 +59,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\PlayerIsGround.cs" />
+    <Compile Include="Assets\Script\StateMachine.cs" />
     <Compile Include="Assets\Script\GameDirector.cs" />
+    <Compile Include="Assets\Script\GameObjectState.cs" />
     <Compile Include="Assets\Script\PlayerAction.cs" />
+    <Compile Include="Assets\Script\NightBoss.cs" />
     <Compile Include="Assets\Script\PlayerHitCheck.cs" />
     <Compile Include="Assets\Script\PlayerContllor.cs" />
     <Compile Include="Assets\Script\CameraMove.cs" />
+    <Compile Include="Assets\Script\NightBorneColliderContllore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Png\Cave Platformer Tileset\readme.txt" />

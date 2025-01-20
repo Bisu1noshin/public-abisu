@@ -26,6 +26,7 @@ public class PlayerContllor : MonoBehaviour
     private Collider2D idlecoll;
     private Collider2D crouchcoll;
     private PlayerAction inputActions;
+    private GameObjectState playerState;
     private bool isMoveAddVerocity;
     private float jumpforce = 600.0f;
     private bool isGround;
@@ -73,6 +74,7 @@ public class PlayerContllor : MonoBehaviour
         anim = GetComponent<Animator>();
         idlecoll = transform.GetChild(1).gameObject.GetComponent<Collider2D>();
         crouchcoll = transform.GetChild(2).gameObject.GetComponent<Collider2D>();
+        playerState = new GameObjectState(100, 10);
 
         isMoveAddVerocity = false;
         idlecoll.enabled = false;
@@ -104,6 +106,7 @@ public class PlayerContllor : MonoBehaviour
         inputActions.Player.Attack.performed += OnAttack;
         inputActions.Player.Magic.started += StartedMagic;
         inputActions.Player.Magic.canceled += CanceledMagic;
+        inputActions.Player.Dash.performed += OnDash;
 
         // Input Actionを機能させるためには、
         // 有効化する必要がある
@@ -121,10 +124,14 @@ public class PlayerContllor : MonoBehaviour
     }
     private void OnJump(InputAction.CallbackContext context)
     {
+        if (state != State.Normal) { return; }
+
         onJumpFlag = true;
     }
     private void OnAttack(InputAction.CallbackContext context)
     {
+        if (state != State.Normal) { return; }
+
         onAttackFlag = true;
     }
     private void StartedMagic(InputAction.CallbackContext context)
@@ -133,8 +140,14 @@ public class PlayerContllor : MonoBehaviour
     }
     private void CanceledMagic(InputAction.CallbackContext context) 
     {
+        if (state != State.Normal) { return; }
+
         onMagicFlag = true;
         isMoveAddVerocity = false;
+    }
+    private void OnDash(InputAction.CallbackContext context)
+    {
+        IsDash();
     }
 
     //-----------------------------------
@@ -160,6 +173,13 @@ public class PlayerContllor : MonoBehaviour
         //床判定を参照する
         isGround = GetComponentInChildren<PlayerIsGround>().GetIsGround();
 
+        //HPが0になったらステータスをDeathにする
+        if (playerState.GetHP() == 0) 
+        {
+            PlayerDeath();
+            state = State.Death;
+        }
+
         //アナログスティックを参照する
         Horizontal = moveInputValue.x;
         Vertical = moveInputValue.y;
@@ -170,13 +190,8 @@ public class PlayerContllor : MonoBehaviour
             Horizontal *= 0.1f;
         }
 
-        //床に触れている時に行う処理
-        if (isGround) 
-        {
-            //holdした時間を0から1で返す
-            magicCnt = inputActions.Player.Magic.GetTimeoutCompletionPercentage();
-        }
-        
+        //魔法のチャージアクション
+        ChargeMagicCnt();
 
         if (magicCnt > 0)
         {
@@ -191,13 +206,16 @@ public class PlayerContllor : MonoBehaviour
 
     private void FixedUpdate()
     {
-        PlayerMove();
-        PlayerCrouch();
-        CollisionContllor();
+        if (state == State.Normal) 
+        {
+            PlayerMove();
+            PlayerCrouch();
+            PlayerJump();
+            PlayerAttack();
+            PlayerMagic();
+        }
 
-        PlayerJump();
-        PlayerAttack();
-        PlayerMagic();       
+        CollisionContllor();          
     }
 
     //-----------------------------------
@@ -245,13 +263,6 @@ public class PlayerContllor : MonoBehaviour
                     {
                         float velocityX = this.rb.velocity.x;
                         this.rb.velocity = new(velocityX * 0.96f, this.rb.velocity.y);
-                    }
-                }
-                else
-                {
-                    if (Vertical < 0)
-                    {
-                        this.rb.velocity = new(0, this.rb.velocity.y);
                     }
                 }
             }
@@ -402,6 +413,16 @@ public class PlayerContllor : MonoBehaviour
 
         preMagicCnt = magicCnt;
     }
+    private void ChargeMagicCnt() 
+    {
+        //ジャンプ、しゃがんだらカウントをリセット
+        if (state != State.Normal) { magicCnt = 0; return; }
+        if (!isGround) { magicCnt = 0; return; }
+        if (crouchFlag) { magicCnt = 0; return; }
+        
+        //holdした時間を0から1で返す
+        magicCnt = inputActions.Player.Magic.GetTimeoutCompletionPercentage();
+    }
     private void ChargeMagic()
     {
         if (!isGround) { return; }
@@ -432,25 +453,44 @@ public class PlayerContllor : MonoBehaviour
     }
     private void CollisionContllor()
     {
+        if (state == State.Normal)
+        {
+            idlecoll.isTrigger = false;
+            crouchcoll.isTrigger = false;
+        }
+
         if (crouchFlag)
         {
             idlecoll.enabled = false;
             crouchcoll.enabled = true;
         }
-        else 
+        else
         {
             idlecoll.enabled = true;
             crouchcoll.enabled = false;
         }
+    }
+    private void IsDash()
+    {
+        if (state != State.Normal) { return; }
+
+        state = State.Dash;
+
+        anim.Play("PlayerDash", 0, 0);
+
+        this.rb.gravityScale = 0;
+        this.rb.velocity = new(8 * key, 0);
+
+    }
+    private void PlayerDeath()
+    {
+        anim.Play("PlayerDeath", 0, 0);
     }
 
     //---------------------------------------
     //ゲッター関数
     //---------------------------------------
 
-    public bool GetIsGround() { return this.isGround; }
-    public float GetHorizontal() { return this.Horizontal; }
-    public float GetVertical() { return this.Vertical; }
     public State GetState() { return this.state; }
 
     //---------------------------------------
@@ -478,10 +518,32 @@ public class PlayerContllor : MonoBehaviour
         this.state = s_;
     }
 
+    public void SubPlayerHP(int atp)
+    {
+        playerState.SubHP(atp);
+        Debug.Log("PlayerHP->" + playerState.GetHP());
+    }
+
+    public void SuccessDash()
+    {
+        idlecoll.isTrigger = true;
+        crouchcoll.isTrigger = true;
+    }
+
+    public void PlayerHit()
+    {
+        if (playerState.GetMoveCnt() % 2 == 0) { anim.Play("PlayerHit1", 0, 0); }
+        else { anim.Play("PlayerHit2", 0, 0); }
+
+        rb.gravityScale = 0;
+        state = State.Hit;
+        playerState.AddMoveCnt();
+    }
+
     //---------------------------------------
     //アニメーションイベント関数
     //---------------------------------------
-     
+
     private void PlayerAttack1End() { comboAttackCnt = 0; isMoveAddVerocity = false; }
     private void PlayerAttack2End() { comboAttackCnt = 0; isMoveAddVerocity = false; }
     private void PlayerAttack3End() { comboAttackCnt = 0; isMoveAddVerocity = false; }
@@ -490,4 +552,6 @@ public class PlayerContllor : MonoBehaviour
     private void PlayerAttack3true() { attackFlag = true; }
     private void PlayerJumpAttackEnd() { attackFlag = true; rb.gravityScale = 2; isMoveAddVerocity = false; }
     private void PlayerCrouchAttackEnd() { attackFlag = true; isMoveAddVerocity = false; }
+    private void PlayerDashEnd() { state = State.Normal; rb.gravityScale = 2; }
+    private void PlayerHitEnd() { state = State.Normal; rb.gravityScale = 2; }
 }
