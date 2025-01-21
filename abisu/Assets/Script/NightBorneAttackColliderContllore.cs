@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NightBorneColliderContllore : MonoBehaviour
+public class NightBorneAttackColliderContllore : MonoBehaviour
 {
     private Collider2D coll;//コライダー
     void Start()
@@ -24,8 +24,8 @@ public class NightBorneColliderContllore : MonoBehaviour
             if (state == PlayerContllor.State.Normal)
             {
                 Debug.Log("Hit");
-                GameObjectState _state = GetComponentInParent<NightBoss>().GetGameObjectState();
-                other.gameObject.GetComponentInParent<PlayerContllor>().PlayerHit();
+                EnemyObjectState _state = GetComponentInParent<NightBoss>().GetGameObjectState();
+                other.gameObject.GetComponentInParent<PlayerContllor>().PlayerHit1();
                 other.gameObject.GetComponentInParent<PlayerContllor>().SubPlayerHP(_state.GetAtp());
             }
 
@@ -34,6 +34,9 @@ public class NightBorneColliderContllore : MonoBehaviour
             {
                 Debug.Log("Brink");
                 other.gameObject.GetComponentInParent<PlayerContllor>().SuccessDash();
+                Collider2D coll =
+                    GetComponentInParent<NightBoss>().GetNormalCollider();
+                coll.enabled = false;
             }
 
         }

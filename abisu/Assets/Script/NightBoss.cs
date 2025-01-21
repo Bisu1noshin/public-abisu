@@ -35,7 +35,7 @@ public class NightBoss : MonoBehaviour
     //-----------------------
 
     private StateMachine<StateType, TriggerType> stateMachine;//ステートマシーン
-    private GameObjectState enemyState;//ステータスクラス
+    private EnemyObjectState enemyState;//ステータスクラス
     private Animator anim;//アニメーション
     private GameObject player;//プレイヤー
     private Collider2D NormalColl;//ヒットボックス
@@ -43,6 +43,8 @@ public class NightBoss : MonoBehaviour
     private Collider2D RunColl;//Run時の攻撃範囲
     private int key = 1;
     private bool onRun;
+    private bool colliderFlag;
+    private float timeCnt;
 
     //-----------------------
     //最初に1回だけ呼び出される関数
@@ -52,7 +54,7 @@ public class NightBoss : MonoBehaviour
     {
         //初期化
         stateMachine = new StateMachine<StateType, TriggerType>(StateType.Idle);
-        enemyState = new GameObjectState(100, 10);
+        enemyState = new EnemyObjectState(100, 10);
         anim = GetComponent<Animator>();
         player = GameObject.Find("Player");
         NormalColl = transform.GetChild(0).GetComponent<Collider2D>();
@@ -96,6 +98,9 @@ public class NightBoss : MonoBehaviour
 
         //ステートマシーンを更新
         stateMachine.Update(Time.deltaTime);
+
+        //コライダーを元に戻す処理
+        EnemyColliderContllore();
     }
 
     //---------------------------------
@@ -125,15 +130,15 @@ public class NightBoss : MonoBehaviour
         if (onRun)
         {
             transform.Translate(0.4f * key, 0, 0);
+
+            //コライダー
+            NormalColl.enabled = true;
+            AttackColl.enabled = false;
+            RunColl.enabled = true;
         }
 
         //Run時の攻撃力の変更
         enemyState.SetATP(5);
-
-        //コライダー
-        NormalColl.enabled = true ;
-        AttackColl.enabled = false;
-        RunColl.enabled = true;
     }
     private void EnemyDeath()
     {
@@ -141,6 +146,22 @@ public class NightBoss : MonoBehaviour
         NormalColl.enabled = false;
         AttackColl.enabled = false;
         RunColl.enabled = false;
+    }
+    private void EnemyColliderContllore()
+    {
+        if (NormalColl.enabled == true) { return; }
+
+        if (colliderFlag)
+        {
+            timeCnt += Time.deltaTime;
+
+            if (timeCnt >= 3.0f) 
+            {
+                colliderFlag = false;
+                NormalColl.enabled = true;
+                timeCnt = 0;
+            }
+        }
     }
 
     //---------------------------------
@@ -196,9 +217,16 @@ public class NightBoss : MonoBehaviour
     //---------------------------------
     //ゲッター関数
     //---------------------------------
-    public GameObjectState GetGameObjectState()
+    public EnemyObjectState GetGameObjectState()
     {
         //GameObjectStateを返す
         return this.enemyState;
+    }
+    public Collider2D GetNormalCollider()
+    {
+        if (NormalColl == null) { return null; }
+
+        colliderFlag = true;
+        return NormalColl;
     }
 }

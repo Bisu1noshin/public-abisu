@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameObjectState 
+public class EnemyObjectState 
 {
     private int Hp;
     private int Atp;
     private int MoveCnt;
 
-    public GameObjectState(int hp, int atp)
+    public EnemyObjectState(int hp, int atp)
     {
         Hp = hp;
         Atp = atp;

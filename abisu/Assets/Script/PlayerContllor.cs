@@ -1,7 +1,9 @@
 ﻿using System.Runtime.InteropServices.WindowsRuntime;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 //--------------------------------------
 //ステータスの管理用
 //コンポーネントとして扱う
@@ -16,6 +18,10 @@ public class PlayerContllor : MonoBehaviour
 
     [SerializeField] private State state;
     [SerializeField] private bool jumpFlag;
+    [SerializeField] private Vector2 Verlocity;
+    [SerializeField] private int playerHP;
+    [SerializeField] private int playerMP;
+
 
     //----------------------------------
     //インスペクター参照不可
@@ -25,8 +31,13 @@ public class PlayerContllor : MonoBehaviour
     private Animator anim;
     private Collider2D idlecoll;
     private Collider2D crouchcoll;
+    private Collider2D attack1coll;
+    private Collider2D attack2coll;
+    private Collider2D attack3coll;
+    private Collider2D attackCrouchcoll;
+    private Collider2D attackJumpcoll;
     private PlayerAction inputActions;
-    private GameObjectState playerState;
+    private PlayerObjectState playerObjectState;
     private bool isMoveAddVerocity;
     private float jumpforce = 600.0f;
     private bool isGround;
@@ -74,7 +85,13 @@ public class PlayerContllor : MonoBehaviour
         anim = GetComponent<Animator>();
         idlecoll = transform.GetChild(1).gameObject.GetComponent<Collider2D>();
         crouchcoll = transform.GetChild(2).gameObject.GetComponent<Collider2D>();
-        playerState = new GameObjectState(100, 10);
+        attack1coll = transform.GetChild(3).gameObject.GetComponent<Collider2D>();
+        attack2coll = transform.GetChild(4).gameObject.GetComponent<Collider2D>();
+        attack3coll = transform.GetChild(5).gameObject.GetComponent<Collider2D>();
+        attackCrouchcoll = transform.GetChild(6).gameObject.GetComponent<Collider2D>();
+        attackJumpcoll = transform.GetChild(7).gameObject.  GetComponent<Collider2D>();
+        AttackCollisionContllor(null);
+        playerObjectState = new PlayerObjectState(100, 10, 100);
 
         isMoveAddVerocity = false;
         idlecoll.enabled = false;
@@ -92,7 +109,6 @@ public class PlayerContllor : MonoBehaviour
         onAttackFlag = false;
         onMagicFlag = false;
     }
-
     private void Awake()
     {
         // Actionスクリプトのインスタンス生成
@@ -174,7 +190,7 @@ public class PlayerContllor : MonoBehaviour
         isGround = GetComponentInChildren<PlayerIsGround>().GetIsGround();
 
         //HPが0になったらステータスをDeathにする
-        if (playerState.GetHP() == 0) 
+        if (playerObjectState.GetPlayerHP() == 0) 
         {
             PlayerDeath();
             state = State.Death;
@@ -192,6 +208,14 @@ public class PlayerContllor : MonoBehaviour
 
         //魔法のチャージアクション
         ChargeMagicCnt();
+
+        //デバッグ用
+
+        Verlocity = rb.velocity;
+        playerHP = playerObjectState.GetPlayerHP();
+        playerMP = playerObjectState.GetPlayerMP();
+
+
 
         if (magicCnt > 0)
         {
@@ -215,7 +239,7 @@ public class PlayerContllor : MonoBehaviour
             PlayerMagic();
         }
 
-        CollisionContllor();          
+        HitBoxCollisionContllor();          
     }
 
     //-----------------------------------
@@ -451,14 +475,8 @@ public class PlayerContllor : MonoBehaviour
     {
         anim.Play("PlayerMagicSustain", 0, 0);
     }
-    private void CollisionContllor()
+    private void HitBoxCollisionContllor()
     {
-        if (state == State.Normal)
-        {
-            idlecoll.isTrigger = false;
-            crouchcoll.isTrigger = false;
-        }
-
         if (crouchFlag)
         {
             idlecoll.enabled = false;
@@ -469,6 +487,18 @@ public class PlayerContllor : MonoBehaviour
             idlecoll.enabled = true;
             crouchcoll.enabled = false;
         }
+    }
+    private void AttackCollisionContllor(Collider2D coll) 
+    {
+        attack1coll.enabled = false;
+        attack2coll.enabled = false;
+        attack3coll.enabled = false;
+        attackCrouchcoll.enabled = false;
+        attackJumpcoll.enabled = false;
+
+        if (coll == null) { return; }
+        coll.enabled = true;
+
     }
     private void IsDash()
     {
@@ -481,7 +511,7 @@ public class PlayerContllor : MonoBehaviour
         this.rb.gravityScale = 0;
         this.rb.velocity = new(8 * key, 0);
 
-    }
+    } 
     private void PlayerDeath()
     {
         anim.Play("PlayerDeath", 0, 0);
@@ -520,38 +550,57 @@ public class PlayerContllor : MonoBehaviour
 
     public void SubPlayerHP(int atp)
     {
-        playerState.SubHP(atp);
-        Debug.Log("PlayerHP->" + playerState.GetHP());
+        playerObjectState.SubPlayerHP(atp);
+        Debug.Log("PlayerHP->" + playerObjectState.GetPlayerHP());
     }
 
     public void SuccessDash()
     {
-        idlecoll.isTrigger = true;
-        crouchcoll.isTrigger = true;
+        playerObjectState.SetPlayerAtp(20);
     }
 
-    public void PlayerHit()
+    public void PlayerHit1()
     {
-        if (playerState.GetMoveCnt() % 2 == 0) { anim.Play("PlayerHit1", 0, 0); }
-        else { anim.Play("PlayerHit2", 0, 0); }
+        anim.Play("PlayerHit1", 0, 0);
 
         rb.gravityScale = 0;
         state = State.Hit;
-        playerState.AddMoveCnt();
     }
 
     //---------------------------------------
     //アニメーションイベント関数
     //---------------------------------------
 
-    private void PlayerAttack1End() { comboAttackCnt = 0; isMoveAddVerocity = false; }
-    private void PlayerAttack2End() { comboAttackCnt = 0; isMoveAddVerocity = false; }
-    private void PlayerAttack3End() { comboAttackCnt = 0; isMoveAddVerocity = false; }
+    private void PlayerAttack1End() { comboAttackCnt = 0; isMoveAddVerocity = false; AttackCollisionContllor(null); }
+    private void PlayerAttack2End() { comboAttackCnt = 0; isMoveAddVerocity = false; AttackCollisionContllor(null); }
+    private void PlayerAttack3End() { comboAttackCnt = 0; isMoveAddVerocity = false; AttackCollisionContllor(null); }
     private void PlayerAttack1true() { attackFlag = true; }
     private void PlayerAttack2true() { attackFlag = true; }
     private void PlayerAttack3true() { attackFlag = true; }
-    private void PlayerJumpAttackEnd() { attackFlag = true; rb.gravityScale = 2; isMoveAddVerocity = false; }
-    private void PlayerCrouchAttackEnd() { attackFlag = true; isMoveAddVerocity = false; }
-    private void PlayerDashEnd() { state = State.Normal; rb.gravityScale = 2; }
-    private void PlayerHitEnd() { state = State.Normal; rb.gravityScale = 2; }
+    private void PlayerJumpAttackEnd() { attackFlag = true; rb.gravityScale = 2; isMoveAddVerocity = false; AttackCollisionContllor(null); }
+    private void PlayerCrouchAttackEnd() { attackFlag = true; isMoveAddVerocity = false; AttackCollisionContllor(null); }
+    private void PlayerDashEnd() 
+    { 
+        state = State.Normal;
+        rb.gravityScale = 2;
+        isMoveAddVerocity = false;
+        attackFlag = true;
+        comboAttackCnt = 0;
+        AttackCollisionContllor(null);
+    }
+    private void PlayerHitEnd() 
+    { 
+        state = State.Normal;
+        rb.gravityScale = 2;
+        isMoveAddVerocity = false;
+        attackFlag = true;
+        comboAttackCnt = 0;
+        AttackCollisionContllor(null);
+    }
+    private void Attack1ColliderStart() { AttackCollisionContllor(attack1coll); }
+    private void Attack2ColliderStart(){ AttackCollisionContllor(attack2coll); }
+    private void Attack3ColliderStart(){ AttackCollisionContllor(attack3coll); }
+    private void AttackCrouchColliderStart(){ AttackCollisionContllor(attackCrouchcoll); }
+    private void AttackJumpColliderStart(){ AttackCollisionContllor(attackJumpcoll); }
+
 }
