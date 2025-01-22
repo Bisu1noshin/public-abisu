@@ -3,7 +3,6 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 //--------------------------------------
 //ステータスの管理用
 //コンポーネントとして扱う
@@ -522,6 +521,7 @@ public class PlayerContllor : MonoBehaviour
     //---------------------------------------
 
     public State GetState() { return this.state; }
+    public PlayerObjectState GetPlayerState() { return this.playerObjectState; }
 
     //---------------------------------------
     //セッター関数(保守管理!!!!!!)

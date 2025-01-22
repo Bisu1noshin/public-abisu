@@ -105,6 +105,14 @@ public class StateMachine<TState, TTrigger>
     }
 
     /// <summary>
+    /// 現在のステータスを取得する
+    /// </summary>
+    public TState GetState()
+    {
+        return _stateType;
+    }
+
+    /// <summary>
     /// Stateを直接変更する
     /// </summary>
     private void ChangeState(TState to)

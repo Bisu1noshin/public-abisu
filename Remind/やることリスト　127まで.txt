@@ -2,6 +2,8 @@
 
 Attackコライダーの調整
 player->enemyのHitBoxの実装
+->1/22大体終わった
+
 HitStopをつくるかどうか
 敵を増やす
 タイトルとエンディング

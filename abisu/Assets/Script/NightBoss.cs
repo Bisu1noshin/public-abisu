@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class NightBoss : MonoBehaviour
 {
@@ -9,11 +8,12 @@ public class NightBoss : MonoBehaviour
     //ステータスの定義
     //-----------------------
 
-    public enum StateType
+    private enum StateType
     {
         Non,
         Idle,
         Run,
+        Hit,
         Attack,
         Death
     }
@@ -22,11 +22,12 @@ public class NightBoss : MonoBehaviour
     //トリガーの定義
     //-----------------------
 
-    public enum TriggerType
+    private enum TriggerType
     {
         EnterIdle,
         EnterRun,
         EnterAttack,
+        EnterHit,
         EnterDeath
     }
 
@@ -44,7 +45,9 @@ public class NightBoss : MonoBehaviour
     private int key = 1;
     private bool onRun;
     private bool colliderFlag;
-    private float timeCnt;
+    private bool hitFlag;
+    private float collTimeCnt;
+    private float invincibleTimeCnt;
 
     //-----------------------
     //最初に1回だけ呼び出される関数
@@ -60,21 +63,27 @@ public class NightBoss : MonoBehaviour
         NormalColl = transform.GetChild(0).GetComponent<Collider2D>();
         AttackColl = transform.GetChild(1).GetComponent<Collider2D>();
         RunColl = transform.GetChild(2).GetComponent<Collider2D>();
+        hitFlag = false;
 
         // 遷移情報を登録
         stateMachine.AddTransition(StateType.Idle, StateType.Attack, TriggerType.EnterAttack);
         stateMachine.AddTransition(StateType.Idle, StateType.Run, TriggerType.EnterRun);
         stateMachine.AddTransition(StateType.Idle, StateType.Death, TriggerType.EnterDeath);
+        stateMachine.AddTransition(StateType.Idle, StateType.Hit, TriggerType.EnterHit);
         stateMachine.AddTransition(StateType.Attack, StateType.Idle, TriggerType.EnterIdle);
+        stateMachine.AddTransition(StateType.Attack, StateType.Hit, TriggerType.EnterHit);
         stateMachine.AddTransition(StateType.Attack, StateType.Death, TriggerType.EnterDeath);
+        stateMachine.AddTransition(StateType.Run, StateType.Hit, TriggerType.EnterHit);
         stateMachine.AddTransition(StateType.Run, StateType.Idle, TriggerType.EnterIdle);
         stateMachine.AddTransition(StateType.Run, StateType.Death, TriggerType.EnterDeath);
-
+        stateMachine.AddTransition(StateType.Hit, StateType.Idle, TriggerType.EnterIdle);
+        stateMachine.AddTransition(StateType.Hit, StateType.Death, TriggerType.EnterDeath);
 
         //Actionの登録
         stateMachine.SetupState(StateType.Idle, () => anim.Play("NightBorne_Idle", 0, 0), () => Debug.Log("OnExit ; Idle"), deltaTime => EnemyIdle());
         stateMachine.SetupState(StateType.Attack, () => anim.Play("NightBorne_Idle2Attack", 0, 0), () => Debug.Log("OnExit ; Attack"), deltaTime => EnemyAttack());
         stateMachine.SetupState(StateType.Run, () => anim.Play("NightBorne_Idle2Run", 0, 0), () => Debug.Log("OnExit ; Attack"), deltaTime => EnemyRun());
+        stateMachine.SetupState(StateType.Hit, () => anim.Play("NightBorne_Hit", 0, 0), () => Debug.Log("OnExit ; Hit"), deltaTime => EnemyHit());
         stateMachine.SetupState(StateType.Death, () => anim.Play("NightBorne_Death", 0, 0), () => Debug.Log("OnExit ; Death"), deltaTime => EnemyDeath());
 
     }
@@ -101,6 +110,9 @@ public class NightBoss : MonoBehaviour
 
         //コライダーを元に戻す処理
         EnemyColliderContllore();
+
+        //攻撃された後の無敵処理
+        InvincibleTime(3.0f);
     }
 
     //---------------------------------
@@ -140,6 +152,10 @@ public class NightBoss : MonoBehaviour
         //Run時の攻撃力の変更
         enemyState.SetATP(5);
     }
+    private void EnemyHit() 
+    {
+        NormalColl.enabled = false;
+    }
     private void EnemyDeath()
     {
         //コライダー
@@ -153,13 +169,26 @@ public class NightBoss : MonoBehaviour
 
         if (colliderFlag)
         {
-            timeCnt += Time.deltaTime;
+            collTimeCnt += Time.deltaTime;
 
-            if (timeCnt >= 3.0f) 
+            if (collTimeCnt >= 3.0f) 
             {
                 colliderFlag = false;
                 NormalColl.enabled = true;
-                timeCnt = 0;
+                collTimeCnt = 0;
+            }
+        }
+    }
+    private void InvincibleTime(float maxCnt)
+    {
+        if (hitFlag)
+        {
+            invincibleTimeCnt += Time.deltaTime;
+
+            if (invincibleTimeCnt >= maxCnt)
+            {
+                hitFlag = false;
+                invincibleTimeCnt = 0;
             }
         }
     }
@@ -212,6 +241,11 @@ public class NightBoss : MonoBehaviour
         AttackColl.enabled = false;
         RunColl.enabled = false;
     }
+    private void NightBorne_HitEnd() 
+    {
+        //Idleに戻し、シード値を更新
+        stateMachine.ExecuteTrigger(TriggerType.EnterIdle);
+    }
     private void Nightborne_DeathEnd() { Destroy(this.gameObject); }
 
     //---------------------------------
@@ -222,6 +256,12 @@ public class NightBoss : MonoBehaviour
         //GameObjectStateを返す
         return this.enemyState;
     }
+    public void SetEnemyObjectState(EnemyObjectState _state) 
+    {
+        if (_state == null) { return; }
+
+        this.enemyState = _state;
+    }
     public Collider2D GetNormalCollider()
     {
         if (NormalColl == null) { return null; }
@@ -229,4 +269,12 @@ public class NightBoss : MonoBehaviour
         colliderFlag = true;
         return NormalColl;
     }
+    public void SetEnemyState2Hit() 
+    {
+        if (stateMachine.GetState() == StateType.Hit) { return ; }
+
+        hitFlag = true;
+        stateMachine.ExecuteTrigger(TriggerType.EnterHit);
+    }
+    public bool GetHitFlag() { return hitFlag; }
 }

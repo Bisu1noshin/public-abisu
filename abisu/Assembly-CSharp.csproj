@@ -58,6 +58,7 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.2.9f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Script\BatFindColliderContllore.cs" />
     <Compile Include="Assets\Script\NightBorneAttackColliderContllore.cs" />
     <Compile Include="Assets\Script\PlayerIsGround.cs" />
     <Compile Include="Assets\Script\StateMachine.cs" />
@@ -66,10 +67,13 @@
     <Compile Include="Assets\Script\PlayerAttackCollidercontllor.cs" />
     <Compile Include="Assets\Script\PlayerAction.cs" />
     <Compile Include="Assets\Script\NightBoss.cs" />
+    <Compile Include="Assets\Script\BatContllore.cs" />
     <Compile Include="Assets\Script\PlayerHitCheck.cs" />
     <Compile Include="Assets\Script\PlayerContllor.cs" />
+    <Compile Include="Assets\Script\NightBorneHitBox.cs" />
     <Compile Include="Assets\Script\EnemyObjectState.cs" />
     <Compile Include="Assets\Script\CameraMove.cs" />
+    <Compile Include="Assets\Script\GameOver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
