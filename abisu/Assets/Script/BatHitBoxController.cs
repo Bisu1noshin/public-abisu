@@ -2,34 +2,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NightBorneHitBox : MonoBehaviour
+public class BatHitBoxController : MonoBehaviour
 {
-    private Collider2D col;
+    private Collider2D coll;
 
     private void Start()
     {
-        col = GetComponent<Collider2D>();
+        coll = GetComponent<Collider2D>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
         {
-            bool hitFlag = GetComponentInParent<NightBoss>().GetHitFlag();
+            bool hitFlag = GetComponentInParent<BatContllore>().GetEnemyHitFlag();
             if (hitFlag) { return; }
 
             EnemyObjectState e_state =
-                 GetComponentInParent<NightBoss>().GetGameObjectState();
+                GetComponentInParent<BatContllore>().GetEnemyState();
 
             PlayerObjectState p_state =
                 other.GetComponentInParent<PlayerContllor>().GetPlayerState();
 
             e_state.SubHP(p_state.GetPlayerAtp());
 
-            GetComponentInParent<NightBoss>().SetEnemyObjectState(e_state);
-            Debug.Log("NightBossEnemyHP->" + e_state.GetHP());
+            GetComponentInParent<BatContllore>().SetEnemyObjectState(e_state);
+            Debug.Log("BatEnemyHP->" + e_state.GetHP());
 
-            GetComponentInParent<NightBoss>().SetEnemyState2Hit();
+            GetComponentInParent<BatContllore>().SetEnemyState2Hit();
+
         }
     }
 }

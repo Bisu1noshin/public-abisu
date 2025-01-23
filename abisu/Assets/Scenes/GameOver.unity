@@ -158,7 +158,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 502, y: 5}
+  m_AnchoredPosition: {x: 607, y: -51}
   m_SizeDelta: {x: 400, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &402061610
@@ -1201,6 +1201,9 @@ MonoBehaviour:
   playerUI: {fileID: 441055587}
   GameOverText: {fileID: 1861855745}
   TriAgainText: {fileID: 472194687}
+  TitleCntText: {fileID: 402061610}
+  ContinueText: {fileID: 1096511739}
+  TitleText: {fileID: 1338132386}
 --- !u!1 &1950339169
 GameObject:
   m_ObjectHideFlags: 0

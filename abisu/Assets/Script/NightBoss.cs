@@ -5,7 +5,7 @@ using UnityEngine;
 public class NightBoss : MonoBehaviour
 {
     //-----------------------
-    //ステータスの定義
+    // ステータスの定義
     //-----------------------
 
     private enum StateType
@@ -19,7 +19,7 @@ public class NightBoss : MonoBehaviour
     }
 
     //-----------------------
-    //トリガーの定義
+    // トリガーの定義
     //-----------------------
 
     private enum TriggerType
@@ -32,7 +32,7 @@ public class NightBoss : MonoBehaviour
     }
 
     //-----------------------
-    //メンバ変数
+    // メンバ変数
     //-----------------------
 
     private StateMachine<StateType, TriggerType> stateMachine;//ステートマシーン
@@ -50,7 +50,7 @@ public class NightBoss : MonoBehaviour
     private float invincibleTimeCnt;
 
     //-----------------------
-    //最初に1回だけ呼び出される関数
+    // 最初に1回だけ呼び出される関数
     //-----------------------
 
     private void Start()
@@ -89,7 +89,7 @@ public class NightBoss : MonoBehaviour
     }
 
     //-----------------------
-    //毎フレーム呼び出されえる関数
+    // 毎フレーム呼び出されえる関数
     //-----------------------
 
     private void Update()
@@ -116,7 +116,7 @@ public class NightBoss : MonoBehaviour
     }
 
     //---------------------------------
-    //メソッド
+    // メソッド
     //---------------------------------
 
     private void EnemyIdle()
@@ -194,7 +194,7 @@ public class NightBoss : MonoBehaviour
     }
 
     //---------------------------------
-    //アニメーションイベント関数
+    // アニメーションイベント関数
     //---------------------------------
 
     private void NightBorne_IdleEnd()
@@ -249,7 +249,7 @@ public class NightBoss : MonoBehaviour
     private void Nightborne_DeathEnd() { Destroy(this.gameObject); }
 
     //---------------------------------
-    //ゲッター関数
+    // 参照可能メソッド
     //---------------------------------
     public EnemyObjectState GetGameObjectState()
     {
