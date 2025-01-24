@@ -272,6 +272,7 @@ public class NightBoss : MonoBehaviour
     public void SetEnemyState2Hit() 
     {
         if (stateMachine.GetState() == StateType.Hit) { return ; }
+        if (stateMachine.GetState() == StateType.Death) { return; }
 
         hitFlag = true;
         stateMachine.ExecuteTrigger(TriggerType.EnterHit);

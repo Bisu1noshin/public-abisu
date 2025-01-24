@@ -58,8 +58,11 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.2.9f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Script\SlimeHitBoxContllore.cs" />
     <Compile Include="Assets\Script\NightBorneAttackColliderContllore.cs" />
     <Compile Include="Assets\Script\PlayerIsGround.cs" />
+    <Compile Include="Assets\Script\CrabAttackColliderContllore.cs" />
+    <Compile Include="Assets\Script\SlimeContllore.cs" />
     <Compile Include="Assets\Script\StateMachine.cs" />
     <Compile Include="Assets\Script\GameDirector.cs" />
     <Compile Include="Assets\Script\BatHitBoxController.cs" />
@@ -69,11 +72,14 @@
     <Compile Include="Assets\Script\PlayerAttackCollidercontllor.cs" />
     <Compile Include="Assets\Script\PlayerAction.cs" />
     <Compile Include="Assets\Script\NightBoss.cs" />
+    <Compile Include="Assets\Script\SlimeAttackColliderContllore.cs" />
     <Compile Include="Assets\Script\CrabFind2RunColliderContllore.cs" />
     <Compile Include="Assets\Script\BatContllore.cs" />
+    <Compile Include="Assets\Script\CrabHitBoxColliderContllore.cs" />
     <Compile Include="Assets\Script\PlayerHitCheck.cs" />
     <Compile Include="Assets\Script\PlayerContllor.cs" />
     <Compile Include="Assets\Script\TItleSceneContllore.cs" />
+    <Compile Include="Assets\Script\SlimeFindPlayer2AttackColliderConyllore.cs" />
     <Compile Include="Assets\Script\NightBorneHitBox.cs" />
     <Compile Include="Assets\Script\EnemyObjectState.cs" />
     <Compile Include="Assets\Script\CameraMove.cs" />

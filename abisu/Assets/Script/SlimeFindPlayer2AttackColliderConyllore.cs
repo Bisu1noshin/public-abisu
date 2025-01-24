@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CrabFind2AttackColliderContllore : MonoBehaviour
+public class SlimeFindPlayer2AttackColliderConyllore : MonoBehaviour
 {
     private Collider2D coll;
 
@@ -14,7 +14,11 @@ public class CrabFind2AttackColliderContllore : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            GetComponentInParent<CrabContllore>().SetFindEnemy2Attack();
+            float playerPosX=
+                other.gameObject.transform.parent.position.x;
+
+            GetComponentInParent<SlimeContllore>().SetEnemy2Attack();
+            GetComponentInParent<SlimeContllore>().SetMovePosX(playerPosX);
         }
     }
 }

@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Crab_Hit
+  m_Name: Slime_Run
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,11 +21,13 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -877484797, guid: 3d49c5b01c14fc94cbc8e2bedf4c4ab5, type: 3}
+      value: {fileID: -1581335277, guid: bb492871f33c5bc49a5f6fc416d75f53, type: 3}
     - time: 0.083333336
-      value: {fileID: 243715733, guid: 3d49c5b01c14fc94cbc8e2bedf4c4ab5, type: 3}
+      value: {fileID: 297048294, guid: bb492871f33c5bc49a5f6fc416d75f53, type: 3}
     - time: 0.16666667
-      value: {fileID: -1239732703, guid: 3d49c5b01c14fc94cbc8e2bedf4c4ab5, type: 3}
+      value: {fileID: 957334357, guid: bb492871f33c5bc49a5f6fc416d75f53, type: 3}
+    - time: 0.25
+      value: {fileID: -1034438491, guid: bb492871f33c5bc49a5f6fc416d75f53, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -48,15 +50,16 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -877484797, guid: 3d49c5b01c14fc94cbc8e2bedf4c4ab5, type: 3}
-    - {fileID: 243715733, guid: 3d49c5b01c14fc94cbc8e2bedf4c4ab5, type: 3}
-    - {fileID: -1239732703, guid: 3d49c5b01c14fc94cbc8e2bedf4c4ab5, type: 3}
+    - {fileID: -1581335277, guid: bb492871f33c5bc49a5f6fc416d75f53, type: 3}
+    - {fileID: 297048294, guid: bb492871f33c5bc49a5f6fc416d75f53, type: 3}
+    - {fileID: 957334357, guid: bb492871f33c5bc49a5f6fc416d75f53, type: 3}
+    - {fileID: -1034438491, guid: bb492871f33c5bc49a5f6fc416d75f53, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.18333334
+    m_StopTime: 0.26666668
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -76,8 +79,8 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.16666667
-    functionName: Crab_HitEnd
+  - time: 0.25
+    functionName: Slime_RunEnd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

@@ -15,10 +15,10 @@ public class CrabFind2RunColliderContllore : MonoBehaviour
         if (other.tag == "Player") 
         {
             float posx =
-                other.transform.position.x - gameObject.transform.parent.position.x;
+                other.transform.position.x - transform.parent.position.x;
 
             GetComponentInParent<CrabContllore>().SetMovePosX(posx);
-            GetComponentInParent<CrabContllore>().SetFindPlayer2Run();
+            GetComponentInParent<CrabContllore>().SetFindEnemy2Run();
         }
     }
 }
