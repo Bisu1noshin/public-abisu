@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SlimeContllore : MonoBehaviour
@@ -36,7 +38,6 @@ public class SlimeContllore : MonoBehaviour
     private Animator anim;//アニメーション
     private GameObject player;//プレイヤー
     private Collider2D NormalColl;//ヒットボックス
-    private Collider2D findPlayer2AttackColl;
     private Collider2D AttackColl;
     private bool hitFlag;
     private float invincibleTimeCnt;
@@ -46,6 +47,7 @@ public class SlimeContllore : MonoBehaviour
     private float runTimeCnt;
     private bool colliderFlag;
     private float collTimeCnt;
+    private int key;
 
     private void Start()
     {
@@ -53,11 +55,11 @@ public class SlimeContllore : MonoBehaviour
         enemyState = new EnemyObjectState(10, 10);
         anim = GetComponent<Animator>();
         player = GameObject.Find("Player");
-        NormalColl = transform.GetChild(0).GetComponent<Collider2D>();
-        findPlayer2AttackColl = transform.GetChild(1).GetComponent<Collider2D>();
-        AttackColl = transform.GetChild(2).GetComponent<Collider2D>();
-        findPlayer2AttackColl.enabled = false;
+        NormalColl = transform.GetChild(0).GetComponent<Collider2D>();       
+        AttackColl = transform.GetChild(1).GetComponent<Collider2D>();
+        AttackColl.enabled = false;
         runTimeCnt = 0;
+        key = (int)transform.localScale.x;
 
         // 遷移情報を登録
         stateMachine.AddTransition(StateType.Idle, StateType.Hit, TriggerType.EnterHit);
@@ -78,7 +80,7 @@ public class SlimeContllore : MonoBehaviour
         stateMachine.SetupState(StateType.Idle, () => anim.Play("Slime_Idle", 0, 0), () => CollisonReset(), deltaTime => EnemyIdle());
         stateMachine.SetupState(StateType.Attack, () => anim.Play("Slime_Ability", 0, 0), () => CollisonReset(), deltaTime => EnemyAttack());
         stateMachine.SetupState(StateType.Death, () => anim.Play("Slime_Death", 0, 0), () => CollisonReset(), deltaTime => EnemyDeath());
-        stateMachine.SetupState(StateType.Run, () => anim.Play("Slime_Run", 0, 0), () => CollisonReset(), deltaTime => EnemyRun());
+        stateMachine.SetupState(StateType.Run, () => anim.Play("Slime_Run", 0, 0), () => EnenmyRunExit(), deltaTime => EnemyRun());
         stateMachine.SetupState(StateType.Hit, () => anim.Play("Slime_Hit", 0, 0), () => CollisonReset(), deltaTime => EnemyHit());
 
     }
@@ -102,19 +104,50 @@ public class SlimeContllore : MonoBehaviour
         EnemyColliderContllore(1.0f);
     }
 
-    private void EnemyIdle() { findPlayer2AttackColl.enabled = true; }
-    private void EnemyRun() 
-    { 
-        findPlayer2AttackColl.enabled = true;
+    private void EnemyIdle() { }
+    private void EnemyIdleExit()
+    {
+        //rayを飛ばす
+        Vector2 enemyPos = new(transform.position.x, transform.position.y - 0.1f);
+        Vector2 movePos = new(key, 0);
 
-        if (enemyState.GetMoveCnt() % 3 == 0) 
+        movePosX = 1.0f;
+        RaycastHit2D hit = Physics2D.Raycast(enemyPos, movePos, movePosX);
+        Debug.DrawRay(enemyPos,movePos);
+
+        if (hit.collider == null)
         {
-            stateMachine.ExecuteTrigger(TriggerType.EnterIdle);
+            stateMachine.ExecuteTrigger(TriggerType.EnterRun);
+            return;
         }
 
-        transform.Translate(movePosX * Time.deltaTime, 0, 0);
+        movePosX = hit.point.x - enemyPos.x;
+
+        if (hit.collider.tag == "Player")
+        {
+            stateMachine.ExecuteTrigger(TriggerType.EnterAttack);
+            return;
+        }
+
+        Debug.Log(movePosX);
+        key *= -1;
+        stateMachine.ExecuteTrigger(TriggerType.EnterRun);
     }
-    private void EnemyAttack() { AttackColl.enabled = true; }
+    private void EnemyRun() 
+    {
+        float move = movePosX * Time.deltaTime;
+
+        transform.Translate(move * key, 0, 0);
+    }
+    private void EnenmyRunExit() 
+    {
+        CollisonReset();
+        transform.localScale = new(key, 1, 1);
+    }
+    private void EnemyAttack() 
+    {
+        AttackColl.enabled = true;
+    }
     private void EnemyHit() { }
     private void EnemyDeath() { CollisonReset(); }
     private void InvincibleTime(float maxCnt)
@@ -132,7 +165,6 @@ public class SlimeContllore : MonoBehaviour
     }
     private void CollisonReset()
     {
-        findPlayer2AttackColl.enabled = false;
         AttackColl.enabled = false;
     }
     private void EnemyColliderContllore(float ColliderEnabledCnt)
@@ -154,9 +186,17 @@ public class SlimeContllore : MonoBehaviour
 
     //
 
-    private void Slime_IdleEnd() { stateMachine.ExecuteTrigger(TriggerType.EnterRun); }
-    private void Slime_RunEnd() { enemyState.AddMoveCnt(); }
+    private void Slime_IdleEnd() { EnemyIdleExit(); stateMachine.ExecuteTrigger(TriggerType.EnterRun); }
+    private void Slime_RunEnd() { stateMachine.ExecuteTrigger(TriggerType.EnterIdle); }
     private void Slime_HitEnd() { stateMachine.ExecuteTrigger(TriggerType.EnterIdle); }
+    private void Slime_AttackEnd() { stateMachine.ExecuteTrigger(TriggerType.EnterIdle);}
+    private void Slime_DeathEnd() { Destroy(gameObject); }
+    private void Slime_AttackColl1() { AttackColl.transform.localPosition = new Vector3(0, -0.17f, 0); }
+    private void Slime_AttackColl2() { AttackColl.transform.localPosition = new Vector3(0, 0.3f, 0); }
+    private void Slime_AttackColl3() { AttackColl.transform.localPosition = new Vector3(0, 0.44f, 0); }    
+    private void Slime_AttackColl4() { AttackColl.transform.localPosition = new Vector3(0, -0.13f, 0); }
+    private void Slime_AttackColl5() { AttackColl.transform.localPosition = new Vector3(0, -0.44f, 0); }
+
 
     //
     public void SetEnemy2Attack() 

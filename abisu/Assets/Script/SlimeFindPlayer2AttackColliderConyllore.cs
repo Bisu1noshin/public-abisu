@@ -14,11 +14,7 @@ public class SlimeFindPlayer2AttackColliderConyllore : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            float playerPosX=
-                other.gameObject.transform.parent.position.x;
-
             GetComponentInParent<SlimeContllore>().SetEnemy2Attack();
-            GetComponentInParent<SlimeContllore>().SetMovePosX(playerPosX);
         }
     }
 }

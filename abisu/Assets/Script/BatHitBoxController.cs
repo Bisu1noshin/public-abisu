@@ -13,7 +13,7 @@ public class BatHitBoxController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Attack")
         {
             bool hitFlag = GetComponentInParent<BatContllore>().GetEnemyHitFlag();
             if (hitFlag) { return; }
