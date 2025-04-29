@@ -40,22 +40,22 @@ public class BatShotController : MonoBehaviour
         if (other.tag == "Player")//コライダーのタグがプレイヤーだった時
         {
             //プレイヤーの状態を取得
-            PlayerContllor.State state =
-                other.GetComponentInParent<PlayerContllor>().GetState();
+            PlayerContllor_1.State state =
+                other.GetComponentInParent<PlayerContllor_1>().GetState();
 
             //プレイヤーの状態がNormalの時、ダメージを与える
-            if (state == PlayerContllor.State.Normal)
+            if (state == PlayerContllor_1.State.Normal)
             {
                 Debug.Log("Hit");
-                other.GetComponentInParent<PlayerContllor>().PlayerHit1();
-                other.GetComponentInParent<PlayerContllor>().SubPlayerHP(Atp);
+                other.GetComponentInParent<PlayerContllor_1>().PlayerHit1();
+                other.GetComponentInParent<PlayerContllor_1>().SubPlayerHP(Atp);
             }
 
             //プレイヤーの状態がDashの時、回避成功関数を呼び出す
-            if (state == PlayerContllor.State.Dash)
+            if (state == PlayerContllor_1.State.Dash)
             {
                 Debug.Log("Brink");
-                other.gameObject.GetComponentInParent<PlayerContllor>().SuccessDash();
+                other.gameObject.GetComponentInParent<PlayerContllor_1>().SuccessDash();
             }
         }
 

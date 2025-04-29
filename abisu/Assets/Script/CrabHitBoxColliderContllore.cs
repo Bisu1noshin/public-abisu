@@ -21,7 +21,7 @@ public class CrabHitBoxColliderContllore : MonoBehaviour
                  GetComponentInParent<CrabContllore>().GetGameObjectState();
 
             PlayerObjectState p_state =
-                other.GetComponentInParent<PlayerContllor>().GetPlayerState();
+                other.GetComponentInParent<PlayerContllor_1>().GetPlayerState();
 
             e_state.SubHP(p_state.GetPlayerAtp());
 

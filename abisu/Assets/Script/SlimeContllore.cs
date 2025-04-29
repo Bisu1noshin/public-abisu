@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class SlimeContllore : MonoBehaviour
 {
+
     //-----------------------
     // ステータスの定義
     //-----------------------

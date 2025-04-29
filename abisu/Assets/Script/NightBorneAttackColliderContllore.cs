@@ -17,23 +17,23 @@ public class NightBorneAttackColliderContllore : MonoBehaviour
         if (other.tag == "Player")//コライダーのタグがプレイヤーだった時
         {
             //プレイヤーの状態を取得
-            PlayerContllor.State state =
-                other.gameObject.GetComponentInParent<PlayerContllor>().GetState();
+            PlayerContllor_1.State state =
+                other.gameObject.GetComponentInParent<PlayerContllor_1>().GetState();
 
             //プレイヤーの状態がNormalの時、ダメージを与える
-            if (state == PlayerContllor.State.Normal)
+            if (state == PlayerContllor_1.State.Normal)
             {
                 Debug.Log("Hit");
                 EnemyObjectState _state = GetComponentInParent<NightBoss>().GetGameObjectState();
-                other.gameObject.GetComponentInParent<PlayerContllor>().PlayerHit1();
-                other.gameObject.GetComponentInParent<PlayerContllor>().SubPlayerHP(_state.GetAtp());
+                other.gameObject.GetComponentInParent<PlayerContllor_1>().PlayerHit1();
+                other.gameObject.GetComponentInParent<PlayerContllor_1>().SubPlayerHP(_state.GetAtp());
             }
 
             //プレイヤーの状態がDashの時、回避成功関数を呼び出す
-            if (state == PlayerContllor.State.Dash)
+            if (state == PlayerContllor_1.State.Dash)
             {
                 Debug.Log("Brink");
-                other.gameObject.GetComponentInParent<PlayerContllor>().SuccessDash();
+                other.gameObject.GetComponentInParent<PlayerContllor_1>().SuccessDash();
                 Collider2D coll =
                     GetComponentInParent<NightBoss>().GetNormalCollider();
                 coll.enabled = false;
